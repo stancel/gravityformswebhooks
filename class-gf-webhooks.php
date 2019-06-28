@@ -187,12 +187,24 @@ class GF_Webhooks extends GFFeedAddOn {
 
 	}
 
+	/**
+	 * Plugin starting point. Handles hooks and loading of language files.
+	 *
+	 * @since 1.1.6 Added PayPal delay support.
+	 * @since 1.1.5 Added support for the {admin_ajax_url} and {rest_api_url} merge tags.
+	 */
 	public function init() {
 		parent::init();
 
 		if ( $this->is_gravityforms_supported() ) {
 			add_action( 'gform_admin_pre_render', array( $this, 'add_merge_tags' ) );
 			add_filter( 'gform_pre_replace_merge_tags', array( $this, 'replace_merge_tags' ), 10, 7 );
+
+			$this->add_delayed_payment_support(
+				array(
+					'option_label' => esc_html__( 'Send webhook only when payment is received.', 'gravityformswebhooks' ),
+				)
+			);
 		}
 	}
 
@@ -569,6 +581,26 @@ class GF_Webhooks extends GFFeedAddOn {
 
 
 	// # FEED PROCESSING -----------------------------------------------------------------------------------------------
+
+	/**
+	 * Determines if feed processing should happen asynchronously.
+	 *
+	 * @since 1.1.6 Added PayPal delay support.
+	 * @since 1.0
+	 *
+	 * @param array $feed  The feed currently being processed.
+	 * @param array $entry The entry currently being processed.
+	 * @param array $form  The form currently being processed.
+	 *
+	 * @return bool
+	 */
+	public function is_asynchronous( $feed, $entry, $form ) {
+		if ( $this->_bypass_feed_delay ) {
+			return false;
+		}
+
+		return parent::is_asynchronous( $feed, $entry, $form );
+	}
 
 	/**
 	 * Send webhook request.

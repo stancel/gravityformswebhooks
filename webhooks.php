@@ -3,7 +3,7 @@
 Plugin Name: Gravity Forms Webhooks Add-On
 Plugin URI: https://www.gravityforms.com
 Description: Integrates Gravity Forms with third party services using custom webhooks.
-Version: 1.1.5
+Version: 1.2
 Author: rocketgenius
 Author URI: https://www.rocketgenius.com
 License: GPL-2.0+
@@ -28,7 +28,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  **/
 
-define( 'GF_WEBHOOKS_VERSION', '1.1.5' );
+define( 'GF_WEBHOOKS_VERSION', '1.2' );
 
 // If Gravity Forms is loaded, bootstrap the Webhooks Add-On.
 add_action( 'gform_loaded', array( 'GF_Webhooks_Bootstrap', 'load' ), 5 );
