@@ -1,5 +1,7 @@
 <?php
 
+defined( 'ABSPATH' ) || die();
+
 // Load Feed Add-On Framework.
 GFForms::include_feed_addon_framework();
 
@@ -174,10 +176,12 @@ class GF_Webhooks extends GFFeedAddOn {
 	 */
 	public function styles() {
 
+		$min = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG || isset( $_GET['gform_debug'] ) ? '' : '.min';
+
 		$styles = array(
 			array(
 				'handle'  => $this->_slug . '_form_settings',
-				'src'     => $this->get_base_url() . '/css/form_settings.css',
+				'src'     => $this->get_base_url() . "/css/form_settings{$min}.css",
 				'version' => $this->_version,
 				'enqueue' => array( array( 'admin_page' => array( 'form_settings' ) ) ),
 			),
@@ -268,23 +272,23 @@ class GF_Webhooks extends GFFeedAddOn {
 						),
 						'choices'        => array(
 							array(
-								'label' => esc_html__( 'GET', 'gravityformswebhooks' ),
+								'label' => 'GET',
 								'value' => 'GET',
 							),
 							array(
-								'label' => esc_html__( 'POST', 'gravityformswebhooks' ),
+								'label' => 'POST',
 								'value' => 'POST',
 							),
 							array(
-								'label' => esc_html__( 'PUT', 'gravityformswebhooks' ),
+								'label' => 'PUT',
 								'value' => 'PUT',
 							),
 							array(
-								'label' => esc_html__( 'PATCH', 'gravityformswebhooks' ),
+								'label' => 'PATCH',
 								'value' => 'PATCH',
 							),
 							array(
-								'label' => esc_html__( 'DELETE', 'gravityformswebhooks' ),
+								'label' => 'DELETE',
 								'value' => 'DELETE',
 							),
 						),
@@ -663,7 +667,7 @@ class GF_Webhooks extends GFFeedAddOn {
 
 		// If this is a GET or DELETE request, add request data to request URL.
 		if ( in_array( $request_method, array( 'GET', 'DELETE' ) ) && ! empty( $request_data ) ) {
-			$request_url = add_query_arg( $request_data, $request_url );
+			$request_url = add_query_arg( urlencode_deep( $request_data ), $request_url );
 		}
 
 		// If this is a PUT or POST request, format request data.
@@ -699,7 +703,7 @@ class GF_Webhooks extends GFFeedAddOn {
 			'body'      => ! in_array( $request_method, array( 'GET', 'DELETE' ) ) ? $request_data : null,
 			'method'    => $request_method,
 			'headers'   => $request_headers,
-			'sslverify' => apply_filters( 'https_local_ssl_verify', true ),
+			'sslverify' => apply_filters( 'https_local_ssl_verify', true, $request_url ),
 		);
 
 		/**
